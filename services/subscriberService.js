@@ -24,4 +24,17 @@ const findAll = async (startIndex) => {
 	}
 };
 
-module.exports = { subscribe, findAll };
+const findByEmailAddress = async (emailAddress) => {
+	try {
+		return Subscriber.findOne({
+			where: {
+				emailAddress: emailAddress,
+			},
+		});
+	} catch (error) {
+		console.log(error);
+		throw new Error("Error Find Subscriber");
+	}
+};
+
+module.exports = { subscribe, findAll, findByEmailAddress };

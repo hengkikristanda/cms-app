@@ -32,23 +32,33 @@ const addSubscriber = async (req, res) => {
 			return res.status(400).json(responseBody);
 		}
 
-		let source;
+		let source = "N/A";
 		if (ipAddress) {
-			const location = await getLocation(location);
+			const location = await getLocation(ipAddress);
 			if (location) {
 				source = `${location.country}/${location.city}`;
+			} else {
+				console.log("Unknown Client's Location");
 			}
 		}
 
-		const result = await subscriberService.subscribe(emailAddress, source);
+		const existingEmail = await subscriberService.findByEmailAddress(emailAddress);
+		if (existingEmail) {
+			responseBody.message = "Your email is already registered";
+			return res.status(400).json(responseBody);
+		}
 
-		responseBody.statusCode = 200;
-		responseBody.message = "Success";
-		responseBody.isSuccess = true;
-		responseBody.objectData = {
-			result: emailAddress,
-		};
-		res.status(200).json(responseBody);
+		const result = await subscriberService.subscribe(emailAddress, source);
+		if (result) {
+			responseBody.statusCode = 200;
+			responseBody.message = "Success";
+			responseBody.isSuccess = true;
+			responseBody.objectData = {
+				result: emailAddress,
+			};
+			return res.status(200).json(responseBody);
+		}
+		throw new Error("Failed to add new Subsciption");
 	} catch (error) {
 		console.log(error);
 		responseBody.responseMessage = "Something went wrong";

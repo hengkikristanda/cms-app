@@ -124,6 +124,8 @@ const uploadImage = async (req, res) => {
 };
 
 const createContent = async (req, res) => {
+	const WEB_UPDATER_BASE_ENDPOINT = process.env.ILIMITS_WEB_V2_UPDATER_API;
+
 	const responseBody = new ResponseBody();
 	try {
 		const {
@@ -189,7 +191,7 @@ const createContent = async (req, res) => {
 				body: JSON.stringify(jsonRequestBody),
 			};
 
-			const apiResponse = await fetch(`http://localhost:3200/api/content/promotion`, config);
+			const apiResponse = await fetch(`${WEB_UPDATER_BASE_ENDPOINT}/promotion`, config);
 			if (!apiResponse.ok) {
 				console.log("Failed to update data to web");
 				const errorResponse = await apiResponse.json();
