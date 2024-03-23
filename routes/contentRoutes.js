@@ -51,6 +51,7 @@ router.post("/image/uploads", imageUploader.array("files"), contentController.up
 
 router.post("/promotion", contentController.createContent);
 // router.get("/promotion", contentController.fetchAll);
+router.get("/promotions", contentController.fetchPromotions);
 router.get("/promotion/:contentId?", contentController.fetchView);
 router.delete("/promotion/:contentId", contentController.deleteContent);
 

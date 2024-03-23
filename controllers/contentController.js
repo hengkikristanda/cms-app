@@ -9,6 +9,7 @@ const { generateTimestampBasedUUID, STATIC_FILE_BASEURL } = require("../utils/co
 const fs = require("fs").promises;
 const fsWrite = require("fs");
 const FormData = require("form-data");
+const { v4: uuidv4 } = require("uuid");
 
 const uploadFile = async (req, res) => {
 	try {
@@ -75,27 +76,33 @@ const uploadImage = async (req, res) => {
 		const formData = new FormData();
 
 		for (const imageFile of imageFiles) {
+			console.log(imageFile);
 			const fileData = await fs.readFile(imageFile.path);
 
 			const result = await ImagesModel.create({
-				id: generateTimestampBasedUUID(),
+				id: uuidv4(),
 				originalFileName: imageFile.originalname,
 				mimeType: imageFile.mimetype,
 				fileName: imageFile.filename,
 				imageData: fileData,
 			});
 
-			if (result.id) {
+			uploadedImages.push({
+				id: result.id,
+				originalFileName: result.originalFileName,
+			});
+
+			/* if (result.id) {
 				uploadedImages.push({
 					id: result.id,
 					originalFileName: result.originalFileName,
 				});
 
 				formData.append("files", fsWrite.createReadStream(imageFile.path));
-			}
+			} */
 		}
 
-		let webEndPoint = "http://localhost:3200/api/uploads/publicImages";
+		/* let webEndPoint = "http://localhost:3200/api/uploads/publicImages";
 
 		let config = {
 			method: "post",
@@ -115,7 +122,7 @@ const uploadImage = async (req, res) => {
 			.catch((error) => {
 				console.log(error);
 			});
-
+ */
 		res.status(200).json({ message: "File uploaded successfully", data: uploadedImages });
 	} catch (err) {
 		console.error(err);
@@ -289,4 +296,45 @@ const deleteContent = async (req, res) => {
 	}
 };
 
-module.exports = { uploadFile, uploadImage, createContent, fetchAll, fetchView, deleteContent };
+const fetchPromotions = async (req, res) => {
+	const responseBody = new ResponseBody();
+	try {
+		const maxUrlLength = 48; // Example length
+		if (req.originalUrl.length > maxUrlLength) {
+			return res.status(414).send("Request-URI Too Long");
+		}
+
+		let { index } = req.query;
+
+		if (index) {
+			const parsed = parseInt(index, 10);
+			const isInteger = !isNaN(parsed) && parsed.toString() === index.toString();
+			if (!isInteger) return res.status(404).send("Not Found");
+		} else {
+			index = 0;
+		}
+
+		console.log("INdex: ", index);
+
+		const result = await contentService.fetchPromotionOverview(index);
+
+		responseBody.statusCode = 200;
+		responseBody.message = "Success";
+		responseBody.isSuccess = true;
+		responseBody.objectData = result;
+
+		res.status(200).json(responseBody);
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+module.exports = {
+	fetchPromotions,
+	uploadFile,
+	uploadImage,
+	createContent,
+	fetchAll,
+	fetchView,
+	deleteContent,
+};

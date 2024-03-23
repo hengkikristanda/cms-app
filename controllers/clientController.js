@@ -13,8 +13,6 @@ const addSubscriber = async (req, res) => {
 	try {
 		const { emailAddress, ipAddress } = req.body;
 
-		responseBody.statusCode = 400;
-
 		if (!emailAddress) {
 			responseBody.message = "emailAddress is Required";
 			return res.status(400).json(responseBody);
@@ -50,7 +48,6 @@ const addSubscriber = async (req, res) => {
 
 		const result = await subscriberService.subscribe(emailAddress, source);
 		if (result) {
-			responseBody.statusCode = 200;
 			responseBody.message = "Success";
 			responseBody.isSuccess = true;
 			responseBody.objectData = {
@@ -62,7 +59,6 @@ const addSubscriber = async (req, res) => {
 	} catch (error) {
 		console.log(error);
 		responseBody.responseMessage = "Something went wrong";
-		responseBody.statusCode = 500;
 		res.status(500).json(responseBody);
 	}
 };
@@ -74,7 +70,6 @@ const getSubscriber = async (req, res) => {
 
 		const result = await subscriberService.findAll(parseInt(startIndex));
 
-		responseBody.statusCode = 200;
 		responseBody.message = "Success";
 		responseBody.isSuccess = true;
 		responseBody.objectData = result;

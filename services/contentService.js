@@ -86,6 +86,21 @@ const findAll = async (startIndex) => {
 	}
 };
 
+const fetchPromotionOverview = async (startIndex) => {
+	try {
+		return ContentView.findAll({
+			attributes: ["id", "heading", "subHeading", "footNote", "imageId", "imageFileName", "mimeType"],
+			offset: parseInt(startIndex) * 20,
+			limit: 20,
+			order: [["lastModifiedDate", "DESC"]],
+			// where: { contentStatus: "publish" },
+		});
+	} catch (error) {
+		console.log(error);
+		throw new Error("Error Fetch Promotion Overview");
+	}
+};
+
 const findView = async (contentId) => {
 	try {
 		const clause = {
@@ -164,4 +179,4 @@ async function translateText(targetContent, languageCode) {
 	});
 }
 
-module.exports = { createContent, findAll, findView, deleteById };
+module.exports = { fetchPromotionOverview, createContent, findAll, findView, deleteById };

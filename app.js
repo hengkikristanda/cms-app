@@ -7,6 +7,8 @@ const { config } = require("dotenv");
 const cors = require("cors");
 const clientRoutes = require("./routes/clientRoutes");
 const contentRoutes = require("./routes/contentRoutes");
+const webSettingsRoutes = require("./routes/webSettingsRoutes");
+
 
 config();
 
@@ -27,6 +29,8 @@ app.use(helmet());
 app.use("/client", clientRoutes);
 
 app.use("/content", contentRoutes);
+
+app.use("/web-settings", webSettingsRoutes);
 
 app.use((req, res) => {
 	res.status(404).json({ message: "Not Found" });

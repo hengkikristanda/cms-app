@@ -10,7 +10,15 @@ const ContentView = sequelize.define(
 			primaryKey: true,
 			unique: true,
 		},
+		imageId: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
 		imageFileName: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		mimeType: {
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
