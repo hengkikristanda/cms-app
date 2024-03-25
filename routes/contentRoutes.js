@@ -43,7 +43,8 @@ const imageUploader = multer({
 	},
 });
 
-router.post("/docs/uploads", documentUploader.array("files"), contentController.uploadFile);
+// router.post("/docs/uploads", documentUploader.array("files"), contentController.uploadFile);
+router.post("/docs/uploads", contentController.uploadFile);
 router.delete("/docs/:id", publicDocumentController.deleteDocument);
 router.get("/docs", publicDocumentController.getDocument);
 

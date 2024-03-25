@@ -1,10 +1,11 @@
 const PublicDocs = require("../models/PublicDocs");
+const PublicDocsView = require("../models/modelView/PublicDocsView");
 const fs = require("fs").promises;
 const path = require("path");
 
 const getDocument = async (req, res) => {
 	try {
-		const resultSet = await PublicDocs.findAll();
+		const resultSet = await PublicDocsView.findAll();
 
 		const documentList = [];
 
@@ -15,6 +16,7 @@ const getDocument = async (req, res) => {
 					originalFileName: result.originalFileName,
 					mimeType: result.mimeType,
 					fileName: result.fileName,
+					uploadedBy: result.createdBy,
 					uploadedDate: result.createdAt,
 				});
 			});

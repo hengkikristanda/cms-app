@@ -13,6 +13,29 @@ const { v4: uuidv4 } = require("uuid");
 
 const uploadFile = async (req, res) => {
 	try {
+		const { uploadedFiles } = req.body;
+
+		for (const item of uploadedFiles) {
+			await PublicDocs.create({
+				id: uuidv4(),
+				originalFileName: item.originalname,
+				mimeType: item.mimetype,
+				fileName: item.filename,
+				createdBy: item.createdBy,
+			});
+		}
+
+		// await PublicDocs.bulkCreate(uploadedFiles);
+
+		res.status(200).json({ message: "File uploaded successfully" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: "Server Error" });
+	}
+};
+
+/* const uploadFile = async (req, res) => {
+	try {
 		if (!req.files) {
 			return res.status(400).json({ message: "No file uploaded" });
 		}
@@ -62,7 +85,7 @@ const uploadFile = async (req, res) => {
 		console.error(err);
 		res.status(500).json({ message: "Server Error" });
 	}
-};
+}; */
 
 const uploadImage = async (req, res) => {
 	const uploadedImages = [];

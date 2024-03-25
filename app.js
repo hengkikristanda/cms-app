@@ -60,7 +60,7 @@ app.use("/client", clientRoutes);
 app.use("/content", contentRoutes);
 
 app.use("/web-settings", webSettingsRoutes);
-
+	
 app.use((req, res) => {
 	res.status(404).json({ message: "Not Found" });
 });
