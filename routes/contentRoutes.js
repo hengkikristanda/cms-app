@@ -50,10 +50,13 @@ router.get("/docs", publicDocumentController.getDocument);
 
 router.post("/image/uploads", imageUploader.array("files"), contentController.uploadImage);
 
-router.post("/promotion", contentController.createContent);
+router.post("/promotions", contentController.createContent);
+router.put("/promotions", contentController.updateContent);
 // router.get("/promotion", contentController.fetchAll);
-router.get("/promotions", contentController.fetchPromotions);
+router.get("/promotions/:id?", contentController.fetchPromotions);
+
 router.get("/promotion/:contentId?", contentController.fetchView);
+router.get("/promotions-cms", contentController.fetchPromotionsCms);
 router.delete("/promotion/:contentId", contentController.deleteContent);
 
 //Languages

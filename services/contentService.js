@@ -1,5 +1,7 @@
 const ContentModel = require("../models/ContentModel");
 const ContentView = require("../models/modelView/ContentView");
+const PromotionOverview = require("../models/modelView/PromotionOverview");
+const PromotionOverviewCms = require("../models/modelView/PromotionOverviewCms");
 const { generateTimestampBasedUUID } = require("../utils/commonUtils");
 const { v4: uuidv4 } = require("uuid");
 // const { Translate } = require("@google-cloud/translate").v2;
@@ -14,11 +16,12 @@ const { translate } = require("free-translate");
 }); */
 
 const createContent = async (
-	imageId,
+	heroImage,
 	heading,
 	subHeading,
 	footNote,
 	contentStatus,
+	contentType,
 	textContent,
 	ctaButtonLabel,
 	ctaButtonLink,
@@ -43,11 +46,12 @@ const createContent = async (
 
 		const defaultContent = {
 			id: uuidv4(),
-			imageId,
+			heroImage,
 			heading,
 			subHeading,
 			footNote,
 			contentStatus,
+			contentType,
 			textContent,
 			ctaButtonLabel,
 			ctaButtonLink,
@@ -88,12 +92,23 @@ const findAll = async (startIndex) => {
 
 const fetchPromotionOverview = async (startIndex) => {
 	try {
-		return ContentView.findAll({
-			attributes: ["id", "heading", "subHeading", "footNote", "imageId", "imageFileName", "mimeType"],
+		return PromotionOverview.findAll({
 			offset: parseInt(startIndex) * 20,
 			limit: 20,
-			order: [["lastModifiedDate", "DESC"]],
-			// where: { contentStatus: "publish" },
+			order: [["modifiedAt", "DESC"]],
+		});
+	} catch (error) {
+		console.log(error);
+		throw new Error("Error Fetch Promotion Overview");
+	}
+};
+
+const fetchPromotionOverviewCms = async (startIndex) => {
+	try {
+		return PromotionOverviewCms.findAll({
+			offset: parseInt(startIndex) * 20,
+			limit: 20,
+			order: [["modifiedAt", "DESC"]],
 		});
 	} catch (error) {
 		console.log(error);
@@ -128,6 +143,19 @@ const deleteById = async (contentId) => {
 	} catch (error) {
 		console.log("Failed to delete content:", error.message);
 		throw error;
+	}
+};
+
+const fetchPromotionById = async (id) => {
+	try {
+		return ContentModel.findAll({
+			where: {
+				id,
+			},
+		});
+	} catch (error) {
+		console.log(error);
+		throw new Error("Error Fetch Promotion Overview");
 	}
 };
 
@@ -179,4 +207,27 @@ async function translateText(targetContent, languageCode) {
 	});
 }
 
-module.exports = { fetchPromotionOverview, createContent, findAll, findView, deleteById };
+const updateContent = async (updatedContent, contentId) => {
+	try {
+		const result = await ContentModel.update(updatedContent, {
+			where: {
+				id: contentId,
+			},
+		});
+
+		return result;
+	} catch (error) {
+		console.error("Error updating content: ", error);
+	}
+};
+
+module.exports = {
+	fetchPromotionOverview,
+	fetchPromotionById,
+	createContent,
+	findAll,
+	findView,
+	deleteById,
+	fetchPromotionOverviewCms,
+	updateContent,
+};

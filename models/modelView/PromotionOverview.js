@@ -1,18 +1,14 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database"); // Your Sequelize instance
+const sequelize = require("../../config/database"); // Your Sequelize instance
 
-const ContentModel = sequelize.define(
-	"ContentModel",
+const PromotionOverview = sequelize.define(
+	"PromotionOverview",
 	{
 		id: {
 			type: DataTypes.STRING,
 			allowNull: false,
 			primaryKey: true,
 			unique: true,
-		},
-		imageId: {
-			type: DataTypes.STRING,
-			allowNull: true,
 		},
 		heroImage: {
 			type: DataTypes.STRING,
@@ -34,35 +30,7 @@ const ContentModel = sequelize.define(
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
-		contentType: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		textContent: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		ctaButtonLabel: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		ctaButtonLink: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
 		lang: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		createdAt: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		createdBy: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		modifiedAt: {
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
@@ -70,11 +38,15 @@ const ContentModel = sequelize.define(
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
+		modifiedAt: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
 	},
 	{
-		tableName: "content",
+		tableName: "promotion_overview",
 		timestamps: false,
 	}
 );
 
-module.exports = ContentModel;
+module.exports = PromotionOverview;

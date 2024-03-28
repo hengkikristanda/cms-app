@@ -154,6 +154,48 @@ const uploadImage = async (req, res) => {
 };
 
 const createContent = async (req, res) => {
+	const responseBody = new ResponseBody();
+	try {
+		const {
+			heroImage,
+			heading,
+			subHeading,
+			footNote,
+			contentStatus,
+			textContent,
+			ctaButtonLabel,
+			ctaButtonLink,
+			userId = "N/A",
+		} = req.body;
+
+		console.log("Creating new Content...");
+		const result = await contentService.createContent(
+			heroImage,
+			heading,
+			subHeading,
+			footNote,
+			contentStatus,
+			(contentType = "PROMO"),
+			textContent,
+			ctaButtonLabel,
+			ctaButtonLink,
+			(createdBy = userId)
+		);
+
+		responseBody.message = "Success";
+		responseBody.isSuccess = true;
+		responseBody.objectData = {
+			// result: emailAddress,
+		};
+		res.status(200).json(responseBody);
+	} catch (error) {
+		console.log(error);
+		responseBody.responseMessage = "Something went wrong";
+		res.status(500).json(responseBody);
+	}
+};
+
+/* const createContent = async (req, res) => {
 	const WEB_UPDATER_BASE_ENDPOINT = process.env.ILIMITS_WEB_V2_UPDATER_API;
 
 	const responseBody = new ResponseBody();
@@ -244,7 +286,7 @@ const createContent = async (req, res) => {
 		responseBody.statusCode = 500;
 		res.status(500).json(responseBody);
 	}
-};
+}; */
 
 const fetchAll = async (req, res) => {
 	const responseBody = new ResponseBody();
@@ -253,7 +295,6 @@ const fetchAll = async (req, res) => {
 
 		const result = await contentService.findAll(parseInt(startIndex));
 
-		responseBody.statusCode = 200;
 		responseBody.message = "Success";
 		responseBody.isSuccess = true;
 		responseBody.objectData = result;
@@ -270,7 +311,6 @@ const fetchView = async (req, res) => {
 
 		const result = await contentService.findView(contentId);
 
-		responseBody.statusCode = 200;
 		responseBody.message = "Success";
 		responseBody.isSuccess = true;
 		responseBody.objectData = result;
@@ -287,25 +327,7 @@ const deleteContent = async (req, res) => {
 		if (contentId) {
 			const result = await contentService.deleteById(contentId);
 			if (result) {
-				let config = {
-					method: "delete",
-				};
-
-				const apiResponse = await fetch(
-					`http://localhost:3200/api/content/promotion/${contentId}`,
-					config
-				);
-
-				if (!apiResponse.ok) {
-					console.log("Failed to update data to web");
-					const errorResponse = await apiResponse.json();
-					console.log(errorResponse);
-				} else {
-					console.log("Successfully update data to web");
-				}
-
 				responseBody.responseMessage = "Content successfully deleted";
-				responseBody.statusCode = 200;
 				return res.status(200).json(responseBody);
 			}
 			throw new Error("No row affected");
@@ -314,12 +336,48 @@ const deleteContent = async (req, res) => {
 	} catch (error) {
 		console.log(error);
 		responseBody.responseMessage = "Failed to delete Content: " + error.message;
-		responseBody.statusCode = 401;
 		res.status(401).json(responseBody);
 	}
 };
 
 const fetchPromotions = async (req, res) => {
+	const responseBody = new ResponseBody();
+	try {
+		const id = req.params.id;
+
+		const maxUrlLength = 200; // Example length
+		if (req.originalUrl.length > maxUrlLength) {
+			return res.status(414).send("Request-URI Too Long");
+		}
+
+		let { index } = req.query;
+
+		if (index) {
+			const parsed = parseInt(index, 10);
+			const isInteger = !isNaN(parsed) && parsed.toString() === index.toString();
+			if (!isInteger) return res.status(404).send("Not Found");
+		} else {
+			index = 0;
+		}
+
+		let result;
+		if (id) {
+			result = await contentService.fetchPromotionById(id);
+		} else {
+			result = await contentService.fetchPromotionOverview(index);
+		}
+
+		responseBody.message = "Success";
+		responseBody.isSuccess = true;
+		responseBody.objectData = result;
+
+		res.status(200).json(responseBody);
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+const fetchPromotionsCms = async (req, res) => {
 	const responseBody = new ResponseBody();
 	try {
 		const maxUrlLength = 48; // Example length
@@ -337,14 +395,17 @@ const fetchPromotions = async (req, res) => {
 			index = 0;
 		}
 
-		console.log("INdex: ", index);
+		const resultSet = await contentService.fetchPromotionOverviewCms(index);
 
-		const result = await contentService.fetchPromotionOverview(index);
+		const responseData = [];
 
-		responseBody.statusCode = 200;
+		resultSet.map((item) => {
+			responseData.push(item.dataValues);
+		});
+
 		responseBody.message = "Success";
 		responseBody.isSuccess = true;
-		responseBody.objectData = result;
+		responseBody.objectData = responseData;
 
 		res.status(200).json(responseBody);
 	} catch (error) {
@@ -352,11 +413,61 @@ const fetchPromotions = async (req, res) => {
 	}
 };
 
+const updateContent = async (req, res) => {
+	const responseBody = new ResponseBody();
+	try {
+		const {
+			id,
+			heroImage,
+			heading,
+			subHeading,
+			footNote,
+			contentStatus,
+			textContent,
+			ctaButtonLabel,
+			ctaButtonLink,
+			userId,
+		} = req.body;
+
+		const updatedContentBody = {
+			heading,
+			subHeading,
+			footNote,
+			contentStatus,
+			textContent,
+			ctaButtonLabel,
+			ctaButtonLink,
+		};
+
+		if (heroImage) {
+			updatedContentBody.heroImage = heroImage;
+		}
+		updatedContentBody.modifiedBy = userId;
+
+		console.log(updatedContentBody);
+
+		const result = await contentService.updateContent(updatedContentBody, id);
+
+		responseBody.message = "Success";
+		responseBody.isSuccess = true;
+		responseBody.objectData = {
+			// result: emailAddress,
+		};
+		res.status(200).json(responseBody);
+	} catch (error) {
+		console.log(error);
+		responseBody.responseMessage = "Something went wrong";
+		res.status(500).json(responseBody);
+	}
+};
+
 module.exports = {
 	fetchPromotions,
+	fetchPromotionsCms,
 	uploadFile,
 	uploadImage,
 	createContent,
+	updateContent,
 	fetchAll,
 	fetchView,
 	deleteContent,

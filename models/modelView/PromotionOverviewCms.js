@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../config/database"); // Your Sequelize instance
 
-const ContentView = sequelize.define(
-	"ContentView",
+const PromotionOverviewCms = sequelize.define(
+	"PromotionOverviewCms",
 	{
 		id: {
 			type: DataTypes.STRING,
@@ -11,14 +11,6 @@ const ContentView = sequelize.define(
 			unique: true,
 		},
 		heroImage: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		imageFileName: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		mimeType: {
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
@@ -38,35 +30,19 @@ const ContentView = sequelize.define(
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
-		textContent: {
+		modifiedBy: {
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
-		ctaButtonLabel: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		ctaButtonLink: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		userId: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		lastModifiedBy: {
-			type: DataTypes.STRING,
-			allowNull: true,
-		},
-		lastModifiedDate: {
+		modifiedAt: {
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
 	},
 	{
-		tableName: "content_view",
+		tableName: "promotion_overview_cms",
 		timestamps: false,
 	}
 );
 
-module.exports = ContentView;
+module.exports = PromotionOverviewCms;
